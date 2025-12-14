@@ -33,6 +33,7 @@ export default function Proxy() {
   const { bookmarks, addBookmark, removeBookmark } = useBookmarks();
   const [showBookmarks, setShowBookmarks] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const [inputValue, setInputValue] = useState("");
 
   const [tabs, setTabs] = useState<Tab[]>([
     {
@@ -53,18 +54,17 @@ export default function Proxy() {
 
   const addTab = () => {
     const newId = Date.now().toString();
-    setTabs([
-      ...tabs,
-      {
-        id: newId,
-        url: "",
-        title: "New Tab",
-        isLoading: false,
-        history: [],
-        historyIndex: -1,
-      },
-    ]);
+    const newTab: Tab = {
+      id: newId,
+      url: "",
+      title: "New Tab",
+      isLoading: false,
+      history: [],
+      historyIndex: -1,
+    };
+    setTabs([...tabs, newTab]);
     setActiveTabId(newId);
+    setInputValue("");
   };
 
   const closeTab = (id: string) => {
@@ -73,63 +73,77 @@ export default function Proxy() {
     setTabs(newTabs);
     if (activeTabId === id) {
       setActiveTabId(newTabs[0].id);
+      setInputValue(newTabs[0].url);
     }
   };
 
   const updateTabUrl = (id: string, url: string) => {
-    setTabs(
-      tabs.map((t) =>
+    setTabs((prevTabs) =>
+      prevTabs.map((t) =>
         t.id === id
           ? {
               ...t,
               url,
               history: [...t.history.slice(0, t.historyIndex + 1), url],
-              historyIndex: t.history.length,
-              title: new URL(url).hostname || url,
+              historyIndex: t.historyIndex + 1,
+              title: extractHostname(url),
             }
           : t,
       ),
     );
+    if (id === activeTabId) {
+      setInputValue(url);
+    }
   };
 
-  const handleNavigate = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const input = form.querySelector("input[type='text']") as HTMLInputElement;
-    const value = input.value.trim();
+  const extractHostname = (url: string): string => {
+    try {
+      return new URL(url).hostname || url;
+    } catch {
+      return url;
+    }
+  };
 
-    if (!value) return;
+  const handleNavigate = (url: string) => {
+    if (!url) return;
 
-    let url = value;
+    let finalUrl = url.trim();
 
-    if (!url.startsWith("http://") && !url.startsWith("https://")) {
-      if (url.includes(".") && !url.includes(" ")) {
-        url = "https://" + url;
+    if (!finalUrl.startsWith("http://") && !finalUrl.startsWith("https://")) {
+      if (finalUrl.includes(".") && !finalUrl.includes(" ")) {
+        finalUrl = "https://" + finalUrl;
       } else {
-        url = "https://www.google.com/search?q=" + encodeURIComponent(value);
+        finalUrl =
+          "https://www.google.com/search?q=" + encodeURIComponent(url);
       }
     }
 
     try {
-      new URL(url);
-      updateTabUrl(activeTabId, url);
-      input.value = url;
+      new URL(finalUrl);
+      updateTabUrl(activeTabId, finalUrl);
     } catch {
       console.error("Invalid URL");
     }
+  };
+
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    handleNavigate(inputValue);
   };
 
   const goBack = () => {
     const tab = tabs.find((t) => t.id === activeTabId);
     if (tab && tab.historyIndex > 0) {
       const newIndex = tab.historyIndex - 1;
-      setTabs(
-        tabs.map((t) =>
+      const newUrl = tab.history[newIndex];
+      setTabs((prevTabs) =>
+        prevTabs.map((t) =>
           t.id === activeTabId
-            ? { ...t, historyIndex: newIndex, url: t.history[newIndex] }
+            ? { ...t, historyIndex: newIndex, url: newUrl }
             : t,
         ),
       );
+      setInputValue(newUrl);
     }
   };
 
@@ -137,13 +151,15 @@ export default function Proxy() {
     const tab = tabs.find((t) => t.id === activeTabId);
     if (tab && tab.historyIndex < tab.history.length - 1) {
       const newIndex = tab.historyIndex + 1;
-      setTabs(
-        tabs.map((t) =>
+      const newUrl = tab.history[newIndex];
+      setTabs((prevTabs) =>
+        prevTabs.map((t) =>
           t.id === activeTabId
-            ? { ...t, historyIndex: newIndex, url: t.history[newIndex] }
+            ? { ...t, historyIndex: newIndex, url: newUrl }
             : t,
         ),
       );
+      setInputValue(newUrl);
     }
   };
 
@@ -178,6 +194,14 @@ export default function Proxy() {
     navigate("/");
   };
 
+  const handleTabSwitch = (tabId: string) => {
+    setActiveTabId(tabId);
+    const tab = tabs.find((t) => t.id === tabId);
+    if (tab) {
+      setInputValue(tab.url);
+    }
+  };
+
   return (
     <div
       className={`flex h-screen bg-background transition-all ${
@@ -209,7 +233,7 @@ export default function Proxy() {
                     href={bookmark.url}
                     onClick={(e) => {
                       e.preventDefault();
-                      updateTabUrl(activeTabId, bookmark.url);
+                      handleNavigate(bookmark.url);
                       setShowBookmarks(false);
                     }}
                     className="block p-4 hover:bg-muted transition-colors group"
@@ -218,7 +242,7 @@ export default function Proxy() {
                       {bookmark.title}
                     </p>
                     <p className="text-xs text-muted-foreground truncate">
-                      {new URL(bookmark.url).hostname}
+                      {extractHostname(bookmark.url)}
                     </p>
                   </a>
                 ))}
@@ -242,7 +266,7 @@ export default function Proxy() {
                     ? "bg-background border-b-2 border-primary"
                     : "bg-muted hover:bg-muted/80 text-muted-foreground"
                 }`}
-                onClick={() => setActiveTabId(tab.id)}
+                onClick={() => handleTabSwitch(tab.id)}
               >
                 <span className="text-sm font-medium max-w-xs truncate">
                   {tab.title || "New Tab"}
@@ -293,22 +317,18 @@ export default function Proxy() {
               size="sm"
               onClick={reload}
               className="h-9 w-9 p-0"
+              disabled={!activeTab.url}
             >
               <RotateCw className="w-4 h-4" />
             </Button>
 
             {/* URL Input */}
-            <form onSubmit={handleNavigate} className="flex-1">
+            <form onSubmit={handleFormSubmit} className="flex-1">
               <Input
                 type="text"
                 placeholder="Enter URL or search..."
-                defaultValue={activeTab.url}
-                onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    handleNavigate(e as any);
-                  }
-                }}
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
                 className="h-9 bg-muted border-0 focus:ring-primary"
               />
             </form>
@@ -331,6 +351,7 @@ export default function Proxy() {
               onClick={toggleBookmark}
               className="h-9 w-9 p-0"
               title="Bookmark this page"
+              disabled={!activeTab.url}
             >
               <Bookmark
                 className="w-4 h-4"
@@ -342,7 +363,12 @@ export default function Proxy() {
             </Button>
 
             {/* Share Button */}
-            <Button variant="ghost" size="sm" className="h-9 w-9 p-0">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-9 w-9 p-0"
+              disabled={!activeTab.url}
+            >
               <Share2 className="w-4 h-4" />
             </Button>
 
@@ -408,6 +434,7 @@ export default function Proxy() {
         <div className="flex-1 overflow-hidden">
           {activeTab.url ? (
             <iframe
+              key={activeTab.id}
               ref={iframeRef}
               src={`/api/proxy?url=${encodeURIComponent(activeTab.url)}`}
               className="w-full h-full border-0"
@@ -434,7 +461,7 @@ export default function Proxy() {
           {activeTab.isLoading ? (
             <span>Loading...</span>
           ) : activeTab.url ? (
-            <span>Ready • {new URL(activeTab.url).hostname}</span>
+            <span>Ready • {extractHostname(activeTab.url)}</span>
           ) : (
             <span>Ready</span>
           )}
