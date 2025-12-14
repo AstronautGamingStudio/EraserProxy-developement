@@ -176,7 +176,7 @@ export default function Auth() {
             type="button"
             variant="outline"
             className="w-full h-10 font-medium gap-2 mb-4"
-            disabled={loading}
+            disabled={loading || !isConfigured}
             onClick={handleGoogleSignIn}
           >
             <Chrome className="w-4 h-4" />
