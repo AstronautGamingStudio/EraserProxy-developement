@@ -31,14 +31,20 @@ interface Tab {
 }
 
 export default function Proxy() {
+  const navigate = useNavigate();
+  const { user, signOut } = useAuth();
+  const { bookmarks, addBookmark, removeBookmark, isBookmarked } = useBookmarks();
+  const [showBookmarks, setShowBookmarks] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+
   const [tabs, setTabs] = useState<Tab[]>([
     {
       id: "1",
-      url: "https://example.com",
-      title: "Example Domain",
+      url: "",
+      title: "New Tab",
       isLoading: false,
-      history: ["https://example.com"],
-      historyIndex: 0,
+      history: [],
+      historyIndex: -1,
       isBookmarked: false,
     },
   ]);
