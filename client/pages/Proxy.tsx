@@ -303,6 +303,12 @@ export default function Proxy() {
                 type="text"
                 placeholder="Enter URL or search..."
                 defaultValue={activeTab.url}
+                onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleNavigate(e as any);
+                  }
+                }}
                 className="h-9 bg-muted border-0 focus:ring-primary"
               />
             </form>
