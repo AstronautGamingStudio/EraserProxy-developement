@@ -326,11 +326,11 @@ export default function Proxy() {
               className="h-9 w-9 p-0"
               title="Bookmark this page"
             >
-              {isCurrentUrlBookmarked ? (
-                <BookmarkFilled className="w-4 h-4 text-primary" />
-              ) : (
-                <Bookmark className="w-4 h-4" />
-              )}
+              <Bookmark
+                className="w-4 h-4"
+                fill={isCurrentUrlBookmarked ? "currentColor" : "none"}
+                stroke={isCurrentUrlBookmarked ? "hsl(280 100% 50%)" : "currentColor"}
+              />
             </Button>
 
             {/* Share Button */}
