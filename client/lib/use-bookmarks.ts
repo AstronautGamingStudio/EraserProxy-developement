@@ -54,6 +54,11 @@ export function useBookmarks() {
       return;
     }
 
+    if (!supabase) {
+      setError("Supabase is not configured");
+      return;
+    }
+
     try {
       setError(null);
       const { data, error: insertError } = await supabase
@@ -77,6 +82,11 @@ export function useBookmarks() {
 
   // Remove bookmark
   const removeBookmark = async (id: string) => {
+    if (!supabase) {
+      setError("Supabase is not configured");
+      return;
+    }
+
     try {
       setError(null);
       const { error: deleteError } = await supabase
