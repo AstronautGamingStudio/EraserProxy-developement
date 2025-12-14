@@ -7,7 +7,7 @@ import { useAuth } from "@/lib/auth-context";
 
 export default function Auth() {
   const navigate = useNavigate();
-  const { signUp, signIn, signInWithGoogle } = useAuth();
+  const { signUp, signIn, signInWithGoogle, isConfigured } = useAuth();
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
