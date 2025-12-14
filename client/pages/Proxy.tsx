@@ -1,6 +1,9 @@
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/lib/auth-context";
+import { useBookmarks } from "@/lib/use-bookmarks";
+import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
   ArrowRight,
@@ -13,6 +16,8 @@ import {
   BookmarkFilled,
   Share2,
   Settings,
+  LogOut,
+  Menu,
 } from "lucide-react";
 
 interface Tab {
