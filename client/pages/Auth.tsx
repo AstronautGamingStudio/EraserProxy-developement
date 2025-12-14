@@ -1,24 +1,50 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Eye as EyeIcon } from "lucide-react";
-import { Chrome } from "lucide-react";
+import { Eye as EyeIcon, Chrome } from "lucide-react";
+import { useAuth } from "@/lib/auth-context";
 
 export default function Auth() {
+  const navigate = useNavigate();
+  const { signUp, signIn, signInWithGoogle } = useAuth();
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     setLoading(true);
-    // Supabase auth integration will go here
-    // For now, redirect to proxy
-    setTimeout(() => {
-      window.location.href = "/proxy";
-    }, 500);
+
+    try {
+      if (isSignUp) {
+        await signUp(email, password);
+      } else {
+        await signIn(email, password);
+      }
+      navigate("/proxy");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Authentication failed";
+      setError(message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setError(null);
+    setLoading(true);
+
+    try {
+      await signInWithGoogle();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Google sign in failed";
+      setError(message);
+      setLoading(false);
+    }
   };
 
   return (
@@ -76,6 +102,12 @@ export default function Auth() {
             </p>
           </div>
 
+          {error && (
+            <div className="mb-6 p-4 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm">
+              {error}
+            </div>
+          )}
+
           <form onSubmit={handleEmailAuth} className="space-y-4 mb-6">
             <div>
               <label className="block text-sm font-medium mb-2">Email</label>
@@ -85,6 +117,7 @@ export default function Auth() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}
+                required
               />
             </div>
 
@@ -96,6 +129,8 @@ export default function Auth() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}
+                required
+                minLength={6}
               />
             </div>
 
@@ -135,6 +170,7 @@ export default function Auth() {
             variant="outline"
             className="w-full h-10 font-medium gap-2 mb-4"
             disabled={loading}
+            onClick={handleGoogleSignIn}
           >
             <Chrome className="w-4 h-4" />
             Google
@@ -146,8 +182,12 @@ export default function Auth() {
               {isSignUp ? "Already have an account? " : "Don't have an account? "}
             </span>
             <button
-              onClick={() => setIsSignUp(!isSignUp)}
+              onClick={() => {
+                setIsSignUp(!isSignUp);
+                setError(null);
+              }}
               className="text-primary hover:underline font-semibold"
+              disabled={loading}
             >
               {isSignUp ? "Sign In" : "Sign Up"}
             </button>
