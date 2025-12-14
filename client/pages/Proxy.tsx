@@ -166,8 +166,8 @@ export default function Proxy() {
   };
 
   const reload = () => {
-    if (iframeRef.current) {
-      iframeRef.current.src = activeTab.url;
+    if (iframeRef.current && activeTab.url) {
+      iframeRef.current.src = `/api/proxy?url=${encodeURIComponent(activeTab.url)}`;
     }
   };
 
