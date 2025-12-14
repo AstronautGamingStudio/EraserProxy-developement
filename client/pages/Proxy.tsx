@@ -13,9 +13,7 @@ import {
   Plus,
   X,
   Bookmark,
-  BookmarkFilled,
   Share2,
-  Settings,
   LogOut,
   Menu,
 } from "lucide-react";
