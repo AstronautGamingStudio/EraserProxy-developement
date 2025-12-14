@@ -1,4 +1,10 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from "react";
 import { supabase } from "./supabase";
 import { User, Session } from "@supabase/supabase-js";
 
@@ -99,7 +105,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, session, loading, isConfigured, signUp, signIn, signInWithGoogle, signOut }}
+      value={{
+        user,
+        session,
+        loading,
+        isConfigured,
+        signUp,
+        signIn,
+        signInWithGoogle,
+        signOut,
+      }}
     >
       {children}
     </AuthContext.Provider>

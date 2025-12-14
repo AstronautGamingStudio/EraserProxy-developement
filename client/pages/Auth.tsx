@@ -27,7 +27,8 @@ export default function Auth() {
       }
       navigate("/proxy");
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Authentication failed";
+      const message =
+        err instanceof Error ? err.message : "Authentication failed";
       setError(message);
     } finally {
       setLoading(false);
@@ -41,7 +42,8 @@ export default function Auth() {
     try {
       await signInWithGoogle();
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Google sign in failed";
+      const message =
+        err instanceof Error ? err.message : "Google sign in failed";
       setError(message);
       setLoading(false);
     }
@@ -62,22 +64,29 @@ export default function Auth() {
             Anonymous browsing made easy
           </h1>
           <p className="text-lg text-white/90 max-w-md">
-            Fast, secure, and reliable web proxy with bookmarks, multiple tabs, and full browser features.
+            Fast, secure, and reliable web proxy with bookmarks, multiple tabs,
+            and full browser features.
           </p>
         </div>
 
         <div className="relative z-10">
           <div className="space-y-4">
             <div className="flex gap-3 text-white/90">
-              <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-sm">✓</div>
+              <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-sm">
+                ✓
+              </div>
               <span>Lightning-fast performance</span>
             </div>
             <div className="flex gap-3 text-white/90">
-              <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-sm">✓</div>
+              <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-sm">
+                ✓
+              </div>
               <span>Bank-level encryption</span>
             </div>
             <div className="flex gap-3 text-white/90">
-              <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-sm">✓</div>
+              <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-sm">
+                ✓
+              </div>
               <span>Save bookmarks across devices</span>
             </div>
           </div>
@@ -105,7 +114,11 @@ export default function Auth() {
           {!isConfigured && (
             <div className="mb-6 p-4 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-yellow-700 dark:text-yellow-400 text-sm">
               <p className="font-medium mb-1">Supabase Not Configured</p>
-              <p>Authentication features require Supabase environment variables to be set. Please add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your environment.</p>
+              <p>
+                Authentication features require Supabase environment variables
+                to be set. Please add VITE_SUPABASE_URL and
+                VITE_SUPABASE_ANON_KEY to your environment.
+              </p>
             </div>
           )}
 
@@ -168,7 +181,9 @@ export default function Auth() {
               <div className="w-full border-t border-border" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-background text-muted-foreground">Or continue with</span>
+              <span className="px-2 bg-background text-muted-foreground">
+                Or continue with
+              </span>
             </div>
           </div>
 
@@ -186,7 +201,9 @@ export default function Auth() {
           {/* Toggle Sign Up / Sign In */}
           <div className="text-center text-sm">
             <span className="text-muted-foreground">
-              {isSignUp ? "Already have an account? " : "Don't have an account? "}
+              {isSignUp
+                ? "Already have an account? "
+                : "Don't have an account? "}
             </span>
             <button
               onClick={() => {
@@ -202,7 +219,10 @@ export default function Auth() {
 
           {/* Back to Home */}
           <div className="mt-8 text-center">
-            <Link to="/" className="text-muted-foreground hover:text-foreground transition text-sm">
+            <Link
+              to="/"
+              className="text-muted-foreground hover:text-foreground transition text-sm"
+            >
               ← Back to Home
             </Link>
           </div>

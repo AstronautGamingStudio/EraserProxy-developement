@@ -88,14 +88,17 @@ function rewriteUrls(html: string, baseUrl: string): string {
   html = html.replace(/src="\/\//g, `src="https://`);
 
   // Rewrite relative URLs in href attributes
-  html = html.replace(/href="(?!(?:https?:|mailto:|#|javascript:|data:))([^"]+)"/g, (match, url) => {
-    try {
-      const fullUrl = new URL(url, base).toString();
-      return `href="/api/proxy?url=${encodeURIComponent(fullUrl)}"`;
-    } catch {
-      return match;
-    }
-  });
+  html = html.replace(
+    /href="(?!(?:https?:|mailto:|#|javascript:|data:))([^"]+)"/g,
+    (match, url) => {
+      try {
+        const fullUrl = new URL(url, base).toString();
+        return `href="/api/proxy?url=${encodeURIComponent(fullUrl)}"`;
+      } catch {
+        return match;
+      }
+    },
+  );
 
   // Rewrite relative URLs in src attributes
   html = html.replace(/src="(?!(?:https?:|data:))([^"]+)"/g, (match, url) => {
@@ -118,15 +121,18 @@ function rewriteUrls(html: string, baseUrl: string): string {
   });
 
   // Rewrite URL in CSS background-image
-  html = html.replace(/background-image:\s*url\(["']?(?!(?:https?:|data:))([^"')\s]+)["']?\)/g, (match, url) => {
-    try {
-      const cleanUrl = url.replace(/["']/g, "");
-      const fullUrl = new URL(cleanUrl, base).toString();
-      return `background-image: url(/api/proxy?url=${encodeURIComponent(fullUrl)})`;
-    } catch {
-      return match;
-    }
-  });
+  html = html.replace(
+    /background-image:\s*url\(["']?(?!(?:https?:|data:))([^"')\s]+)["']?\)/g,
+    (match, url) => {
+      try {
+        const cleanUrl = url.replace(/["']/g, "");
+        const fullUrl = new URL(cleanUrl, base).toString();
+        return `background-image: url(/api/proxy?url=${encodeURIComponent(fullUrl)})`;
+      } catch {
+        return match;
+      }
+    },
+  );
 
   // Add base tag to ensure relative URLs work
   if (!html.includes("<base ")) {

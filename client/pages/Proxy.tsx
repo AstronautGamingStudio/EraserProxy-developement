@@ -87,8 +87,8 @@ export default function Proxy() {
               historyIndex: t.history.length,
               title: new URL(url).hostname || url,
             }
-          : t
-      )
+          : t,
+      ),
     );
   };
 
@@ -127,8 +127,8 @@ export default function Proxy() {
         tabs.map((t) =>
           t.id === activeTabId
             ? { ...t, historyIndex: newIndex, url: t.history[newIndex] }
-            : t
-        )
+            : t,
+        ),
       );
     }
   };
@@ -141,8 +141,8 @@ export default function Proxy() {
         tabs.map((t) =>
           t.id === activeTabId
             ? { ...t, historyIndex: newIndex, url: t.history[newIndex] }
-            : t
-        )
+            : t,
+        ),
       );
     }
   };
@@ -335,7 +335,9 @@ export default function Proxy() {
               <Bookmark
                 className="w-4 h-4"
                 fill={isCurrentUrlBookmarked ? "currentColor" : "none"}
-                stroke={isCurrentUrlBookmarked ? "hsl(280 100% 50%)" : "currentColor"}
+                stroke={
+                  isCurrentUrlBookmarked ? "hsl(280 100% 50%)" : "currentColor"
+                }
               />
             </Button>
 

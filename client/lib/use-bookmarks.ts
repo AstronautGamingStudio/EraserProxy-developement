@@ -37,7 +37,9 @@ export function useBookmarks() {
         if (fetchError) throw fetchError;
         setBookmarks((data as Bookmark[]) || []);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to fetch bookmarks");
+        setError(
+          err instanceof Error ? err.message : "Failed to fetch bookmarks",
+        );
         setBookmarks([]);
       } finally {
         setLoading(false);
@@ -48,7 +50,11 @@ export function useBookmarks() {
   }, [user]);
 
   // Add bookmark
-  const addBookmark = async (url: string, title: string, description?: string) => {
+  const addBookmark = async (
+    url: string,
+    title: string,
+    description?: string,
+  ) => {
     if (!user) {
       setError("You must be logged in to save bookmarks");
       return;
@@ -75,7 +81,8 @@ export function useBookmarks() {
       if (insertError) throw insertError;
       setBookmarks([data as Bookmark, ...bookmarks]);
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to add bookmark";
+      const message =
+        err instanceof Error ? err.message : "Failed to add bookmark";
       setError(message);
     }
   };
@@ -97,7 +104,8 @@ export function useBookmarks() {
       if (deleteError) throw deleteError;
       setBookmarks(bookmarks.filter((b) => b.id !== id));
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to remove bookmark";
+      const message =
+        err instanceof Error ? err.message : "Failed to remove bookmark";
       setError(message);
     }
   };

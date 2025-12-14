@@ -7,7 +7,7 @@ let supabase: SupabaseClient | null = null;
 
 if (!supabaseUrl || !supabaseAnonKey) {
   console.warn(
-    "Supabase environment variables not configured. Auth features will not work. Please add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your environment."
+    "Supabase environment variables not configured. Auth features will not work. Please add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your environment.",
   );
 } else {
   supabase = createClient(supabaseUrl, supabaseAnonKey);
@@ -17,7 +17,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
 export const getSupabaseClient = () => {
   if (!supabase) {
     throw new Error(
-      "Supabase is not configured. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables."
+      "Supabase is not configured. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables.",
     );
   }
   return supabase;
