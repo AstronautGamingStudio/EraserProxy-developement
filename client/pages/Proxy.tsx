@@ -238,8 +238,10 @@ export default function Proxy() {
               type="text"
               placeholder="Enter URL or search..."
               defaultValue={activeTab.url}
-              onChange={(e) => {
-                // Update on change for real-time feedback
+              onKeyPress={(e) => {
+                if (e.key === "Enter") {
+                  handleNavigate(e as any);
+                }
               }}
               className="h-9 bg-muted border-0 focus:ring-primary"
             />
