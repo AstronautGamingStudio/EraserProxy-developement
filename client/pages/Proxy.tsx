@@ -88,18 +88,33 @@ export default function Proxy() {
 
   const handleNavigate = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const input = (e.currentTarget.elements[0] as HTMLInputElement).value;
-    let url = input;
+    const form = e.currentTarget;
+    const input = form.querySelector("input[type='text']") as HTMLInputElement;
+    const value = input.value.trim();
 
+    if (!value) return;
+
+    let url = value;
+
+    // Check if it's a URL or search query
     if (!url.startsWith("http://") && !url.startsWith("https://")) {
-      if (url.includes(".") || url.includes("/")) {
+      // If it looks like a URL (has dots or slashes), add https://
+      if (url.includes(".") && !url.includes(" ")) {
         url = "https://" + url;
       } else {
-        url = "https://www.google.com/search?q=" + encodeURIComponent(url);
+        // Otherwise, treat as search query
+        url = "https://www.google.com/search?q=" + encodeURIComponent(value);
       }
     }
 
-    updateTabUrl(activeTabId, url);
+    // Validate URL
+    try {
+      new URL(url);
+      updateTabUrl(activeTabId, url);
+      input.value = url;
+    } catch {
+      console.error("Invalid URL");
+    }
   };
 
   const goBack = () => {
