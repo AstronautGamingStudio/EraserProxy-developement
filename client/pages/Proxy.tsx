@@ -156,10 +156,29 @@ export default function Proxy() {
     }
   };
 
-  const toggleBookmark = () => {
+  const toggleBookmark = async () => {
+    if (!user) {
+      navigate("/auth");
+      return;
+    }
+
+    const tab = tabs.find((t) => t.id === activeTabId)!;
+    const alreadyBookmarked = bookmarks.some((b) => b.url === tab.url);
+
+    if (alreadyBookmarked) {
+      const bookmark = bookmarks.find((b) => b.url === tab.url);
+      if (bookmark) {
+        await removeBookmark(bookmark.id);
+      }
+    } else {
+      await addBookmark(tab.url, tab.title);
+    }
+
     setTabs(
       tabs.map((t) =>
-        t.id === activeTabId ? { ...t, isBookmarked: !t.isBookmarked } : t
+        t.id === activeTabId
+          ? { ...t, isBookmarked: !t.isBookmarked }
+          : t
       )
     );
   };
