@@ -81,30 +81,61 @@ export const handleProxy: RequestHandler = async (req, res) => {
 
 function rewriteUrls(html: string, baseUrl: string): string {
   const base = new URL(baseUrl);
+  const baseOrigin = base.origin;
 
-  // Rewrite protocol-relative URLs
+  // Rewrite protocol-relative URLs to https
   html = html.replace(/href="\/\//g, `href="https://`);
   html = html.replace(/src="\/\//g, `src="https://`);
 
-  // Rewrite relative URLs
-  html = html.replace(/href="(?!(?:https?:|mailto:|#|javascript:))([^"]+)"/g, (match, url) => {
-    return `href="/api/proxy?url=${encodeURIComponent(new URL(url, base).toString())}"`;
+  // Rewrite relative URLs in href attributes
+  html = html.replace(/href="(?!(?:https?:|mailto:|#|javascript:|data:))([^"]+)"/g, (match, url) => {
+    try {
+      const fullUrl = new URL(url, base).toString();
+      return `href="/api/proxy?url=${encodeURIComponent(fullUrl)}"`;
+    } catch {
+      return match;
+    }
   });
 
-  html = html.replace(
-    /src="(?!(?:https?:|data:))([^"]+)"/g,
-    (match, url) => {
-      return `src="/api/proxy?url=${encodeURIComponent(new URL(url, base).toString())}"`;
+  // Rewrite relative URLs in src attributes
+  html = html.replace(/src="(?!(?:https?:|data:))([^"]+)"/g, (match, url) => {
+    try {
+      const fullUrl = new URL(url, base).toString();
+      return `src="/api/proxy?url=${encodeURIComponent(fullUrl)}"`;
+    } catch {
+      return match;
     }
-  );
+  });
 
   // Rewrite form actions
-  html = html.replace(
-    /action="(?!(?:https?:))([^"]+)"/g,
-    (match, url) => {
-      return `action="/api/proxy?url=${encodeURIComponent(new URL(url, base).toString())}"`;
+  html = html.replace(/action="(?!(?:https?:))([^"]+)"/g, (match, url) => {
+    try {
+      const fullUrl = new URL(url, base).toString();
+      return `action="/api/proxy?url=${encodeURIComponent(fullUrl)}"`;
+    } catch {
+      return match;
     }
-  );
+  });
+
+  // Rewrite URL in CSS background-image
+  html = html.replace(/background-image:\s*url\(["']?(?!(?:https?:|data:))([^"')\s]+)["']?\)/g, (match, url) => {
+    try {
+      const cleanUrl = url.replace(/["']/g, "");
+      const fullUrl = new URL(cleanUrl, base).toString();
+      return `background-image: url(/api/proxy?url=${encodeURIComponent(fullUrl)})`;
+    } catch {
+      return match;
+    }
+  });
+
+  // Add base tag to ensure relative URLs work
+  if (!html.includes("<base ")) {
+    const headMatch = html.match(/<head[^>]*>/i);
+    if (headMatch) {
+      const baseTag = `<base href="${baseUrl}" target="_top">`;
+      html = html.replace(headMatch[0], headMatch[0] + baseTag);
+    }
+  }
 
   return html;
 }
