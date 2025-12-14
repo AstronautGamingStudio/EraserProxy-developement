@@ -156,7 +156,7 @@ export default function Auth() {
             <Button
               type="submit"
               className="w-full bg-primary hover:bg-primary/90 h-10 font-medium"
-              disabled={loading}
+              disabled={loading || !isConfigured}
             >
               {loading ? "Loading..." : isSignUp ? "Create Account" : "Sign In"}
             </Button>
