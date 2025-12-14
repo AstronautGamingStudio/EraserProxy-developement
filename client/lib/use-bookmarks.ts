@@ -19,7 +19,7 @@ export function useBookmarks() {
 
   // Fetch bookmarks
   useEffect(() => {
-    if (!user) {
+    if (!user || !supabase) {
       setBookmarks([]);
       return;
     }
