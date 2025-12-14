@@ -102,6 +102,13 @@ export default function Auth() {
             </p>
           </div>
 
+          {!isConfigured && (
+            <div className="mb-6 p-4 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-yellow-700 dark:text-yellow-400 text-sm">
+              <p className="font-medium mb-1">Supabase Not Configured</p>
+              <p>Authentication features require Supabase environment variables to be set. Please add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your environment.</p>
+            </div>
+          )}
+
           {error && (
             <div className="mb-6 p-4 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm">
               {error}
