@@ -401,10 +401,10 @@ export default function Proxy() {
           {activeTab.url ? (
             <iframe
               ref={iframeRef}
-              src={activeTab.url}
+              src={`/api/proxy?url=${encodeURIComponent(activeTab.url)}`}
               className="w-full h-full border-0"
               title={activeTab.title}
-              sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-pointer-lock allow-modals allow-presentation"
+              sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-pointer-lock allow-modals allow-presentation allow-top-navigation allow-popups-to-escape-sandbox"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center flex-col gap-4 text-center">
